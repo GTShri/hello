@@ -1,3 +1,42 @@
-hallo
-hello world
+final GoogleSignIn  googleSignIn = GoogleSignIn(
+    clientId:
+    "50297548634-7vrj2bckcctsqu92r9ighm5ikkq4g3ad.apps.googleusercontent.com",
+  );
+
+  Future<User?> signInWithGoogle(BuildContext context) async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    try {
+      UserCredential userCredential;
+      if (kIsWeb) {
+        var googleProvider = GoogleAuthProvider();
+        userCredential = await _auth.signInWithPopup(googleProvider);
+      } else {
+        GoogleSignInAccount googleUser = (await GoogleSignIn().signIn())!;
+        final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+        final googleAuthCredential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        userCredential = await _auth.signInWithCredential(googleAuthCredential);
+      }
+      final user = userCredential.user;
+      if (user != null) {
+
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+            builder: (context)=>Mainscreen()),(route)
+        {
+          return false;
+        });
+        // setState(() {
+        //   name=user!.displayName!;
+        //   gmail=user!.email!;
+        // });
+        // print(_auth.currentUser);
+        // createuser();
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
